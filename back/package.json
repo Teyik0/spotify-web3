@@ -1,0 +1,19 @@
+{
+  "name": "back",
+  "module": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "dev": "bun --watch run start"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "prisma": "^5.12.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.12.1"
+  }
+}
