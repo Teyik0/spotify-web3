@@ -88,8 +88,7 @@ export const uploadMusic = async (file: File) => {
       'did:key:z6MkkgsCbnDuQeX9SuKoBx6vsV6ea2nXNVnEuQ9mz5LhY6S9'
     );
     const directoryCid = await client.uploadDirectory([file]);
-    console.log('Uploaded:', directoryCid.toString());
-    return `https://${directoryCid}.ipfs.w3s.link`;
+    return directoryCid.toString();
   } catch (error: any) {
     throw new Error(error.message);
   }

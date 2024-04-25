@@ -50,27 +50,14 @@ musicRouter.post('/', async (req, res) => {
 musicRouter.post('/upload', upload.single('music'), async (req, res) => {
   try {
     if (!req.file) throw new Error('Music file is required');
-    const file = new File([req.file.buffer], req.file.originalname, {
+    if (!req.body.title) throw new Error('Music title is required');
+    const file = new File([req.file.buffer], req.body.title, {
       type: req.file.mimetype,
     });
-    const link = await uploadMusic(file);
-    res.status(201).json({ message: 'Music created successfully', link });
+    const ipfsHash = await uploadMusic(file);
+    console.log('Uploaded', ipfsHash);
+    res.status(201).json({ message: 'Music created successfully', ipfsHash });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
 });
-
-// musicRouter.post('/album/upload', upload.array('music'), async (req, res) => {
-//   try {
-//     if (!req.files) throw new Error('Music files are required');
-//     const files = req.files.map((file) => {
-//       return new File([file.buffer], file.originalname, {
-//         type: file.mimetype,
-//       });
-//     });
-//     const links = await Promise.all(files.map((file) => uploadMusic(file)));
-//     res.status(201).json({ message: 'Music created successfully', links });
-//   } catch (error: any) {
-//     res.status(400).json({ error: error.message });
-//   }
-// });
