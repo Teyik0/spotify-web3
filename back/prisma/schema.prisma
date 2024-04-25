@@ -30,8 +30,8 @@ model Music {
   listenNumber Int
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  album        Album    @relation(fields: [albumId], references: [id])
-  albumId      String
+  album        Album?   @relation(fields: [albumId], references: [id])
+  albumId      String?
 }
 
 model Album {

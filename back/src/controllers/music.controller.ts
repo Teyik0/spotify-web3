@@ -5,8 +5,13 @@ import { create } from '@web3-storage/w3up-client';
 
 export const getAllMusic = async () => {
   try {
-    const music = await prisma.music.findMany();
-    return music;
+    const musics = await prisma.music.findMany({
+      include: {
+        artist: true,
+        album: true,
+      },
+    });
+    return musics;
   } catch (error: any) {
     throw new Error(error.message);
   }
@@ -17,6 +22,10 @@ export const getMusicById = async (id: string) => {
     const music = await prisma.music.findUnique({
       where: {
         id: id,
+      },
+      include: {
+        artist: true,
+        album: true,
       },
     });
     return music;
@@ -31,6 +40,10 @@ export const getMusicByTitle = async (name: string) => {
       where: {
         title: name,
       },
+      include: {
+        artist: true,
+        album: true,
+      },
     });
     return music;
   } catch (error: any) {
@@ -44,20 +57,21 @@ const MusicSchema = z.object({
   artist: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
   albumId: z.string().min(3).max(30).optional(),
   listenNumber: z.number().int().optional(),
-  ipfsHash: z.string().regex(/^Qm[1-9A-HJ-NP-Za-km-z]{44}$/),
+  ipfsHash: z.string(),
 });
 
 interface MusicData {
   title: string;
   year: number;
   artist: `0x${string}`;
-  albumId: string;
+  albumId: string | undefined;
   ipfsHash: string;
   listenNumber: number | 0;
 }
 
 export const createMusic = async (musicData: MusicData) => {
   try {
+    console.log('musicData', musicData);
     const music = MusicSchema.parse(musicData);
     const newMusic: Music = await prisma.music.create({
       data: {
@@ -68,13 +82,21 @@ export const createMusic = async (musicData: MusicData) => {
         artist: {
           connect: { walletAddress: music.artist },
         },
-        album: {
-          connect: { id: music.albumId },
-        },
       },
     });
+    if (music.albumId) {
+      await prisma.music.update({
+        where: { id: newMusic.id },
+        data: {
+          album: {
+            connect: { id: music.albumId },
+          },
+        },
+      });
+    }
     return newMusic;
   } catch (error: any) {
+    console.error(error.message);
     throw new Error(error.message);
   }
 };

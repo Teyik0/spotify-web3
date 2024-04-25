@@ -13,8 +13,8 @@ const upload = multer();
 
 musicRouter.get('/', async (req, res) => {
   try {
-    const music = await getAllMusic();
-    res.status(200).json({ message: 'All music getted successfully', music });
+    const musics = await getAllMusic();
+    res.status(200).json({ message: 'All music getted successfully', musics });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -40,7 +40,7 @@ musicRouter.get('/title', async (req, res) => {
 
 musicRouter.post('/', async (req, res) => {
   try {
-    const music = await createMusic(req.body.title);
+    const music = await createMusic(req.body);
     res.status(201).json({ message: 'Music created successfully', music });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
