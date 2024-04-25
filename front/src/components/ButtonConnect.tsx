@@ -1,19 +1,25 @@
 'use client';
 
-import { useWalletInfo } from '@web3modal/wagmi/react';
+import { useAccount } from 'wagmi';
 
 import { Button } from './ui/button';
+import { useEffect } from 'react';
+import { createUser } from '@/lib/user.action';
 
 const ButtonConnect = () => {
-  const { walletInfo } = useWalletInfo();
+  const { address } = useAccount();
+  useEffect(() => {
+    if (!address) return;
+    createUser(address);
+  }, [address]);
   return (
     <div className='mt-auto flex flex-col gap-2'>
-      <w3m-button size='sm' balance='hide' />
-      {walletInfo && (
-        <Button className='w-full' size='sm'>
+      {address && (
+        <Button className='w-full rounded-full' size='sm'>
           Upgrade Plan
         </Button>
       )}
+      <w3m-button size='sm' balance='show' />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 'use server';
 
-export const upload = async (formData: FormData) => {
+export const uploadToIPFS = async (formData: FormData) => {
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACK_ENDPOINT}/api/music/upload`,
@@ -10,7 +10,7 @@ export const upload = async (formData: FormData) => {
       }
     );
     if (!response.ok) {
-      throw new Error('Failed to upload music');
+      throw new Error('Failed to upload music to IPFS !');
     }
     const data = await response.json();
     return data;

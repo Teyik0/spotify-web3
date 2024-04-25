@@ -17,7 +17,7 @@ interface MusicCardProps {
 
 const MusicCard = ({ title, artist }: MusicCardProps) => {
   return (
-    <div className='flex items-center justify-between'>
+    <div className='flex items-center justify-between bg-blue-950 px-8 py-4 rounded-md'>
       <div className='flex items-center gap-4'>
         <Music className='h-6 w-6 text-gray-50' />
         <div>
