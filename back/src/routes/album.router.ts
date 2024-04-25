@@ -6,7 +6,7 @@ import {
   getAllAlbums,
 } from '../controllers/album.controller';
 
-const albumRouter = Router();
+export const albumRouter = Router();
 
 albumRouter.get('/', async (req, res) => {
   try {
