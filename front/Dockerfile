@@ -1,7 +1,8 @@
-FROM oven/bun:latest as builder
+FROM node:latest as builder
 WORKDIR /app
 
 COPY package.json bun.lockb ./
+RUN yarn global add bun
 RUN bun install
 COPY . .
 RUN bun bundle
