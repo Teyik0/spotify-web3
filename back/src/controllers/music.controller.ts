@@ -71,6 +71,7 @@ const MusicSchema = z.object({
   albumId: z.string().min(3).max(30).optional(),
   listenNumber: z.number().int().optional(),
   ipfsHash: z.string(),
+  slug: z.string().min(3).max(30),
 });
 
 interface MusicData {
@@ -80,6 +81,7 @@ interface MusicData {
   albumId: string | undefined;
   ipfsHash: string;
   listenNumber: number | 0;
+  slug: string;
 }
 
 export const createMusic = async (musicData: MusicData) => {
@@ -92,6 +94,7 @@ export const createMusic = async (musicData: MusicData) => {
         year: music.year,
         ipfsHash: music.ipfsHash,
         listenNumber: 0,
+        slug: music.slug,
         artist: {
           connect: { walletAddress: music.artist },
         },

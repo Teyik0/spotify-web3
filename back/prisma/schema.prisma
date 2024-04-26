@@ -23,6 +23,7 @@ model User {
 model Music {
   id           String   @id @default(cuid())
   title        String
+  slug         String
   artist       User     @relation(fields: [artistId], references: [id])
   artistId     String
   ipfsHash     String   @unique

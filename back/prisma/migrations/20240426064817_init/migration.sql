@@ -16,6 +16,7 @@ CREATE TABLE "User" (
 CREATE TABLE "Music" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
     "artistId" TEXT NOT NULL,
     "ipfsHash" TEXT NOT NULL,
     "year" INTEGER NOT NULL,

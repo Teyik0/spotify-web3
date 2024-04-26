@@ -60,8 +60,8 @@ musicRouter.get('/ipfs/:hash', async (req, res) => {
 musicRouter.post('/upload', upload.single('music'), async (req, res) => {
   try {
     if (!req.file) throw new Error('Music file is required');
-    if (!req.body.title) throw new Error('Music title is required');
-    const file = new File([req.file.buffer], req.body.title, {
+    if (!req.body.slug) throw new Error('Music title is required');
+    const file = new File([req.file.buffer], req.body.slug, {
       type: req.file.mimetype,
     });
     const ipfsHash = await uploadMusic(file);
