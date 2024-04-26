@@ -4,6 +4,7 @@ import {
   createMusic,
   getAllMusic,
   getMusicById,
+  getMusicByIPFSHash,
   getMusicByTitle,
   uploadMusic,
 } from '../controllers/music.controller';
@@ -42,6 +43,15 @@ musicRouter.post('/', async (req, res) => {
   try {
     const music = await createMusic(req.body);
     res.status(201).json({ message: 'Music created successfully', music });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+musicRouter.get('/ipfs/:hash', async (req, res) => {
+  try {
+    const music = await getMusicByIPFSHash(req.params.hash);
+    res.status(200).json({ message: 'Music getted successfully', music });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

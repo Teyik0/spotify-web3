@@ -25,7 +25,7 @@ model Music {
   title        String
   artist       User     @relation(fields: [artistId], references: [id])
   artistId     String
-  ipfsHash     String
+  ipfsHash     String   @unique
   year         Int
   listenNumber Int
   createdAt    DateTime @default(now())

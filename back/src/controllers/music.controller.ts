@@ -51,6 +51,19 @@ export const getMusicByTitle = async (name: string) => {
   }
 };
 
+export const getMusicByIPFSHash = async (hash: string) => {
+  try {
+    const music = await prisma.music.findUnique({
+      where: {
+        ipfsHash: hash,
+      },
+    });
+    return music;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+};
+
 const MusicSchema = z.object({
   title: z.string().min(3).max(30),
   year: z.number().int().positive().finite(),

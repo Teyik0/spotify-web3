@@ -45,6 +45,9 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 -- CreateIndex
 CREATE UNIQUE INDEX "User_walletAddress_key" ON "User"("walletAddress");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "Music_ipfsHash_key" ON "Music"("ipfsHash");
+
 -- AddForeignKey
 ALTER TABLE "Music" ADD CONSTRAINT "Music_artistId_fkey" FOREIGN KEY ("artistId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
