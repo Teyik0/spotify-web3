@@ -14,6 +14,7 @@ export default async function Home() {
                 ? music.artist.username
                 : music.artist.walletAddress
             }
+            slug={music.slug}
             title={music.title}
             ipfsHash={music.ipfsHash}
             key={music.ipfsHash}

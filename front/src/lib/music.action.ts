@@ -8,6 +8,7 @@ export const createMusic = async ({
   year,
   ipfsHash,
   artist,
+  slug,
 }: MusicData) => {
   try {
     const response = await fetch(
@@ -17,7 +18,7 @@ export const createMusic = async ({
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ title, year, ipfsHash, artist }),
+        body: JSON.stringify({ title, year, ipfsHash, artist, slug }),
       }
     );
     if (!response.ok) {

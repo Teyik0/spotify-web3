@@ -14,9 +14,10 @@ interface MusicCardProps {
   title: string;
   artist: string;
   ipfsHash: string;
+  slug: string;
 }
 
-const MusicCard = ({ title, artist, ipfsHash }: MusicCardProps) => {
+const MusicCard = ({ title, artist, ipfsHash, slug }: MusicCardProps) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isLoop, setIsLoop] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
@@ -56,7 +57,7 @@ const MusicCard = ({ title, artist, ipfsHash }: MusicCardProps) => {
     <div className='flex items-center justify-between bg-gray-800 px-8 py-4 rounded-md'>
       <audio
         ref={musicRef}
-        src={`https://${ipfsHash}.ipfs.w3s.link/${title.replace(' ', '%20')}`}
+        src={`https://${ipfsHash}.ipfs.w3s.link/${slug}`}
         loop={isLoop}
         muted={false}
       />
@@ -65,6 +66,8 @@ const MusicCard = ({ title, artist, ipfsHash }: MusicCardProps) => {
         <div>
           <div className='text-lg font-semibold text-gray-50'>{title}</div>
           <div className='text-sm text-gray-400'>{artist}</div>
+          <div className='text-sm text-gray-400'>{slug}</div>
+          <div className='text-sm text-gray-400'>{ipfsHash}</div>
         </div>
       </div>
       <div className='flex items-center gap-4'>

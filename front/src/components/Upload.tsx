@@ -10,6 +10,7 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { erc721abi } from '@/lib/erc721.abi';
 import { createMusic } from '@/lib/music.action';
+import { createSlug } from '@/lib/utils';
 
 interface FormData {
   music: File | null;
@@ -38,10 +39,23 @@ const Upload = () => {
       toast.loading('Uploading your music...');
       const formData = new FormData();
       formData.append('music', formInfo.music);
-      formData.append('title', formInfo.title.replace(' ', '_'));
+      formData.append('slug', createSlug(formInfo.title));
       const uploadData = await uploadToIPFS(formData);
       setIpfsHash(uploadData.ipfsHash);
 
+      createMusic({
+        title: formInfo.title,
+        year: Number(formInfo.year),
+        ipfsHash: uploadData.ipfsHash,
+        artist: address,
+        slug: createSlug(formInfo.title),
+      }).then((data) => {
+        console.log('data', data);
+        toast.dismiss();
+        toast.success('Successfully added music to DB!');
+      });
+
+      toast.loading('Minting NFT on chain...');
       writeContract({
         abi: erc721abi,
         address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`,
@@ -53,17 +67,6 @@ const Upload = () => {
           BigInt(formInfo.year),
           address,
         ],
-      });
-
-      createMusic({
-        title: formInfo.title as string,
-        year: Number(formInfo.year),
-        ipfsHash: ipfsHash as string,
-        artist: address as `0x${string}`,
-      }).then((data) => {
-        console.log('data', data);
-        toast.dismiss();
-        toast.success('Successfully added music to DB!');
       });
     } catch (error: any) {
       toast.dismiss();
@@ -84,11 +87,6 @@ const Upload = () => {
     },
   });
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files) return;
-    setFormInfo({ ...formInfo, music: event.target.files[0] });
-  };
-
   return (
     <div className='text-white'>
       <form action={handleUpload} className='space-y-4'>
@@ -99,7 +97,8 @@ const Upload = () => {
             accept='.mp3, .flac'
             className='text-black font-semibold max-w-sm'
             onChange={(event: ChangeEvent<HTMLInputElement>) =>
-              handleFileChange(event)
+              event.target.files &&
+              setFormInfo({ ...formInfo, music: event.target.files[0] })
             }
           />
         </div>
