@@ -1,5 +1,6 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { MusicData } from './utils';
 
 export const createMusic = async ({
@@ -24,6 +25,7 @@ export const createMusic = async ({
     }
     const data = await response.json();
     console.log('Music created', data);
+    revalidatePath('/');
     return data;
   } catch (error: any) {
     console.error(error.message);
@@ -40,6 +42,7 @@ export const getAllMusic = async () => {
       throw new Error('Failed to fetch music !');
     }
     const data = await response.json();
+    revalidatePath('/');
     return data;
   } catch (error: any) {
     console.error(error.message);

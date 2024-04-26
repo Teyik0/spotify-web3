@@ -1,23 +1,65 @@
+'use client';
+
 import {
-  ArrowLeftIcon,
-  ArrowRightIcon,
   Music,
+  PauseIcon,
   PlayIcon,
   RepeatIcon,
-  ShuffleIcon,
   VolumeIcon,
 } from 'lucide-react';
 import { Button } from './ui/button';
-import { Progress } from './ui/progress';
+import { useRef, useState } from 'react';
 
 interface MusicCardProps {
   title: string;
   artist: string;
+  ipfsHash: string;
 }
 
-const MusicCard = ({ title, artist }: MusicCardProps) => {
+const MusicCard = ({ title, artist, ipfsHash }: MusicCardProps) => {
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isLoop, setIsLoop] = useState<boolean>(false);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
+  const musicRef = useRef<HTMLAudioElement>(null);
+
+  const toggleAudio = (): void => {
+    if (isPlaying) {
+      musicRef.current?.pause();
+      setIsPlaying(false);
+    } else {
+      musicRef.current?.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const infiniteLoop = (): void => {
+    if (isLoop) {
+      musicRef.current?.removeEventListener('ended', infiniteLoop);
+      setIsLoop(false);
+    } else {
+      musicRef.current?.addEventListener('ended', infiniteLoop);
+      setIsLoop(true);
+    }
+  };
+
+  const toggleMuteAudio = (): void => {
+    if (isMuted) {
+      setIsMuted(false);
+      musicRef.current?.setAttribute('muted', 'false');
+    } else {
+      setIsMuted(true);
+      musicRef.current?.setAttribute('muted', 'true');
+    }
+  };
+
   return (
-    <div className='flex items-center justify-between bg-blue-950 px-8 py-4 rounded-md'>
+    <div className='flex items-center justify-between bg-gray-800 px-8 py-4 rounded-md'>
+      <audio
+        ref={musicRef}
+        src={`https://${ipfsHash}.ipfs.w3s.link/${title.replace(' ', '%20')}`}
+        loop={isLoop}
+        muted={false}
+      />
       <div className='flex items-center gap-4'>
         <Music className='h-6 w-6 text-gray-50' />
         <div>
@@ -26,25 +68,42 @@ const MusicCard = ({ title, artist }: MusicCardProps) => {
         </div>
       </div>
       <div className='flex items-center gap-4'>
-        <Button size='icon' variant='ghost'>
+        {/* <Button size='icon' variant='ghost' className='hover:bg-transparent'>
           <ShuffleIcon className='h-6 w-6 text-gray-400' />
+        </Button> */}
+        <Button size='icon' variant='ghost' className='hover:bg-transparent'>
+          {isPlaying ? (
+            <PlayIcon
+              className='h-6 w-6 text-gray-50'
+              onClick={() => toggleAudio()}
+            />
+          ) : (
+            <PauseIcon
+              className='h-6 w-6 text-gray-400'
+              onClick={() => toggleAudio()}
+            />
+          )}
         </Button>
-        <Button size='icon' variant='ghost'>
-          <ArrowLeftIcon className='h-6 w-6 text-gray-400' />
-        </Button>
-        <Button size='icon' variant='ghost'>
-          <PlayIcon className='h-6 w-6 text-gray-50' />
-        </Button>
-        <Button size='icon' variant='ghost'>
-          <ArrowRightIcon className='h-6 w-6 text-gray-400' />
-        </Button>
-        <Button size='icon' variant='ghost'>
-          <RepeatIcon className='h-6 w-6 text-gray-400' />
+        <Button
+          size='icon'
+          onClick={() => infiniteLoop()}
+          variant='ghost'
+          className='hover:bg-transparent'
+        >
+          <RepeatIcon
+            className={`h-6 w-6  ${isLoop ? 'text-gray-50' : 'text-gray-400'}`}
+          />
         </Button>
       </div>
       <div className='flex items-center gap-2'>
-        <VolumeIcon className='h-6 w-6 text-gray-400' />
-        <Progress className='flex-1' value={75} />
+        <Button
+          size='icon'
+          onClick={() => toggleMuteAudio()}
+          variant='ghost'
+          className='hover:bg-transparent'
+        >
+          <VolumeIcon className='h-6 w-6 text-gray-400' />
+        </Button>
       </div>
     </div>
   );

@@ -1,7 +1,6 @@
 'use client';
 
-import { ChangeEvent, useEffect, useState } from 'react';
-import ReactAudioPlayer from 'react-audio-player';
+import { ChangeEvent, useState } from 'react';
 import { toast } from 'sonner';
 import { useAccount, useWatchContractEvent, useWriteContract } from 'wagmi';
 import { uploadToIPFS } from '@/lib/upload.action';
@@ -28,7 +27,6 @@ const Upload = () => {
     year: null,
   });
   const [ipfsHash, setIpfsHash] = useState<string | null>(null);
-  const [triggerCreateMusic, setTriggerCreateMusic] = useState<boolean>(false);
 
   const handleUpload = async () => {
     try {
@@ -37,15 +35,13 @@ const Upload = () => {
       if (!formInfo.year) throw new Error('Please enter a year !');
       if (!address) throw new Error('Please connect your wallet first !');
 
-      toast.loading('Uploading to IPFS...');
+      toast.loading('Uploading your music...');
       const formData = new FormData();
       formData.append('music', formInfo.music);
-      formData.append('title', formInfo.title);
+      formData.append('title', formInfo.title.replace(' ', '_'));
       const uploadData = await uploadToIPFS(formData);
       setIpfsHash(uploadData.ipfsHash);
-      toast.success('Successfully uploaded music to IPFS !');
 
-      toast.loading('Minting the NFT on chain...');
       writeContract({
         abi: erc721abi,
         address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`,
@@ -57,6 +53,17 @@ const Upload = () => {
           BigInt(formInfo.year),
           address,
         ],
+      });
+
+      createMusic({
+        title: formInfo.title as string,
+        year: Number(formInfo.year),
+        ipfsHash: ipfsHash as string,
+        artist: address as `0x${string}`,
+      }).then((data) => {
+        console.log('data', data);
+        toast.dismiss();
+        toast.success('Successfully added music to DB!');
       });
     } catch (error: any) {
       toast.dismiss();
@@ -74,26 +81,8 @@ const Upload = () => {
       console.log('Minted', logs);
       toast.dismiss();
       toast.success('Successfully minted the NFT on chain !');
-      setTriggerCreateMusic(true);
     },
   });
-
-  useEffect(() => {
-    if (triggerCreateMusic) {
-      setTriggerCreateMusic(false);
-      toast.loading('Adding music to db...');
-      createMusic({
-        title: formInfo.title as string,
-        year: Number(formInfo.year),
-        ipfsHash: ipfsHash as string,
-        artist: address as `0x${string}`,
-      }).then((data) => {
-        console.log('data', data);
-        toast.dismiss();
-        toast.success('Successfully added music to DB!');
-      });
-    }
-  }, [triggerCreateMusic]);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files) return;
@@ -138,15 +127,6 @@ const Upload = () => {
           Upload
         </Button>
       </form>
-      <div className='mt-4'>
-        {ipfsHash && formInfo.title && (
-          <ReactAudioPlayer
-            src={`https://${ipfsHash}.ipfs.w3s.link/${formInfo.title}`}
-            autoPlay
-            controls
-          />
-        )}
-      </div>
     </div>
   );
 };
